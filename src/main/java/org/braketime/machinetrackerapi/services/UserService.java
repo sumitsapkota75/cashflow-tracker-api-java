@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.braketime.machinetrackerapi.Dtos.RegisterUserRequest;
 import org.braketime.machinetrackerapi.domain.Role;
 import org.braketime.machinetrackerapi.domain.User;
+import org.braketime.machinetrackerapi.exception.BadRequestException;
 import org.braketime.machinetrackerapi.repository.RoleRepository;
 import org.braketime.machinetrackerapi.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,7 @@ public class UserService {
 
     public User createUser(RegisterUserRequest request){
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new RuntimeException("Email already registered");
+            throw new BadRequestException("Email already registered");
         }
         Role role = roleRepository.findByRole(request.getRole()).orElseThrow(()-> new RuntimeException("Invalid Role"));
         String encodedPassword = passwordEncoder.encode(request.getPassword());

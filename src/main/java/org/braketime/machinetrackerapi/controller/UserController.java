@@ -1,5 +1,6 @@
 package org.braketime.machinetrackerapi.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.RegisterUserRequest;
@@ -22,14 +23,12 @@ public class UserController {
     private final UserResponseMapper userResponseMapper;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody RegisterUserRequest request){
-        try {
-            log.info("Create user api hit");
-        User createdUser = userService.createUser(request);
-        return ResponseEntity.ok(userResponseMapper.toResponse(createdUser));
-        } catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<?> createUser(@Valid @RequestBody RegisterUserRequest request) {
+        log.info("Create user api hit");
+        User user = userService.createUser(request);
+        return ResponseEntity.ok(
+                userResponseMapper.toResponse(user)
+        );
     }
 
 }
