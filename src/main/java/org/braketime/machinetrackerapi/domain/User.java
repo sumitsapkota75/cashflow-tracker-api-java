@@ -25,7 +25,8 @@ public class User {
     private String email;
     private String passwordHash;
 
-    private String roleId;
+
+    private String role;
     private UUID businessId;
 
     private boolean isActive = true;

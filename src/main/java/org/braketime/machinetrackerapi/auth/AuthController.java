@@ -44,9 +44,8 @@ public class AuthController{
         }
 
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        Role role = roleRepository.findById(user.getRoleId()).orElseThrow();
 
-        String token = jwtUtil.generateToken(user.getEmail(), role.getRole());
-        return new JwtResponse(token,role.getRole());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        return new JwtResponse(token,user.getRole());
     }
 }

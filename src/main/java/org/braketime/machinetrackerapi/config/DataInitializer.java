@@ -18,26 +18,16 @@ import java.util.UUID;
 public class DataInitializer {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(UserRepository userRepository,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
     CommandLineRunner initData(RoleRepository roleRepository) {
         return args -> {
-            if (roleRepository.count() == 0) {
-                roleRepository.save(new Role("OWNER"));
-                roleRepository.save(new Role("MANAGER"));
-                roleRepository.save(new Role("EMPLOYEE"));
-                log.info("✅ Default roles inserted");
-            } else {
-                log.info("ℹ️ Roles already exist");
-            }
             seedOwner("OWNER");
         };
     }
@@ -45,16 +35,15 @@ public class DataInitializer {
     public void seedOwner(String roleName){
         String ownerEmail = "owner@system.com";
         if (userRepository.findByEmail(ownerEmail).isPresent()){
-            log.info(".....DEFAULT OWNER ALREADY EXISTS....");
+            log.info(".....DEFAULT OWNER ALREADY EXISTS.....");
             return;
         }
-        Role ownerRole = roleRepository.findByRole(roleName).orElseThrow(()-> new RuntimeException("owner role not found in database"));
 
         // create owner user:
         User owner = User.builder()
                 .email(ownerEmail)
                 .passwordHash(passwordEncoder.encode("admin123"))
-                .roleId(ownerRole.getId())
+                .role("OWNER")
                 .businessId(UUID.randomUUID())
                 .isActive(true)
                 .build();

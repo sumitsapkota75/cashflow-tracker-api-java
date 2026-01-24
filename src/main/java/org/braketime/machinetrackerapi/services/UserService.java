@@ -26,7 +26,7 @@ public class UserService {
         User user = User.builder()
                 .email(request.getEmail())
                 .passwordHash(encodedPassword)
-                .roleId(role.getId())
+                .role(role.getRole())
                 .businessId(request.getBusinessId())
                 .isActive(true)
                 .build();
