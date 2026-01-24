@@ -27,7 +27,7 @@ public class User {
 
 
     private String role;
-    private UUID businessId;
+    private String businessId;
 
     private boolean isActive = true;
 }

@@ -10,5 +10,5 @@ public class UserCreateResponse {
     private String email;
     private String roleId;
     private String businessId;
-    private boolean isActive;
+    private boolean active;
 }

@@ -20,6 +20,6 @@ public class RegisterUserRequest {
 
     @NotBlank(message="Role is required")
     private String role;
-    @NotNull(message="Business is required")
-    private UUID businessId;
+    @NotBlank(message="Business is required")
+    private String businessId;
 }

@@ -14,19 +14,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public User createUser(RegisterUserRequest request){
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
             throw new BadRequestException("Email already registered");
         }
-        Role role = roleRepository.findByRole(request.getRole()).orElseThrow(()-> new RuntimeException("Invalid Role"));
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         User user = User.builder()
                 .email(request.getEmail())
                 .passwordHash(encodedPassword)
-                .role(role.getRole())
+                .role(request.getRole())
                 .businessId(request.getBusinessId())
                 .isActive(true)
                 .build();
