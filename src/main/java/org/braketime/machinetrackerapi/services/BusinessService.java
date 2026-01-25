@@ -49,10 +49,18 @@ public class BusinessService {
     }
 
     // Delete
-    public void deactive(String id){
+    public BusinessResponse deActive(String id){
         Business business = repository.findByIdAndActive(id,true).orElseThrow(()->new NotFoundException("Selected Business is not found"));
         business.setActive(false);
         repository.save(business);
+        return businessMapper.toDto(business);
+    }
+    // Delete
+    public BusinessResponse reActive(String id){
+        Business business = repository.findById(id).orElseThrow(()->new NotFoundException("Selected Business is not found"));
+        business.setActive(true);
+        repository.save(business);
+        return businessMapper.toDto(business);
     }
 
 }

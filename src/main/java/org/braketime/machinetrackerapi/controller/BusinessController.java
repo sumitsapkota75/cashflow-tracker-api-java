@@ -34,4 +34,24 @@ public class BusinessController {
     ){
         return ResponseEntity.ok(businessService.getAll(isActive,pageable));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BusinessResponse> getBusinessById(
+            @PathVariable String id
+    ){
+        return ResponseEntity.ok(businessService.getByID(id));
+    }
+
+    @PutMapping("/{id}/disable")
+    public ResponseEntity<?> deactiveBusiness(
+            @PathVariable String id
+    ){
+        return ResponseEntity.ok(businessService.deActive(id));
+    }
+    @PutMapping("/{id}/enable")
+    public ResponseEntity<?> reActiveBusiness(
+            @PathVariable String id
+    ){
+        return ResponseEntity.ok(businessService.reActive(id));
+    }
 }
