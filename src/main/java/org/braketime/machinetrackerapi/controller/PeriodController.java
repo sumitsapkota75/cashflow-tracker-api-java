@@ -3,6 +3,7 @@ package org.braketime.machinetrackerapi.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.braketime.machinetrackerapi.Dtos.ClosePeriodRequest;
 import org.braketime.machinetrackerapi.Dtos.OpenPeriodRequest;
 import org.braketime.machinetrackerapi.Dtos.PeriodResponse;
 import org.braketime.machinetrackerapi.domain.Period;
@@ -35,5 +36,11 @@ public class PeriodController {
             @RequestBody OpenPeriodRequest request
             ){
         return ResponseEntity.ok(periodService.openPeriod(request,"1234"));
+    }
+    @PostMapping("/close")
+    public ResponseEntity<PeriodResponse> closePeriod(
+            @RequestBody ClosePeriodRequest request
+    ){
+        return ResponseEntity.ok(periodService.closePeriod(request,"1234"));
     }
 }

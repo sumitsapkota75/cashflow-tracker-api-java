@@ -11,5 +11,4 @@ public class ClosePeriodRequest {
     private String periodId;
     private BigDecimal totalCashInClose;
     private BigDecimal totalCashOutClose;
-    private LocalDate businessDate;
 }
