@@ -5,13 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.braketime.machinetrackerapi.enums.OpenReason;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.Instant;
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-@Document(collection = "machine_entries")
+@Document("machine_entries")
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,22 +21,39 @@ import java.util.UUID;
 public class MachineEntry {
 
     @Id
-    private UUID id;
+    private String id;
 
-    private UUID businessId;
-    private String userId;
+    @Indexed
+    private String businessId;
 
-    private Double cashAmount;
-    private Double safeDropped;
-    private String reason;
+    @Indexed
+    private String periodId;
 
-    private boolean shiftClose;
+    @Indexed
+    private String machineId;
 
-    private Integer imageCount;
+    private String openedByUserId;
 
-    private Double totalCashIn;
-    private Double totalVoucherOut;
-    private Double totalNet;
+    private LocalDateTime openedAt;
+    private LocalDateTime closedAt;
 
-    private Instant createdAt;
+    private OpenReason reason;
+    // DAY_START, MID_DAY, PAYOUT, BANK_DEPOSIT
+
+    // From machine slip
+    private BigDecimal reportCashIn;
+    private BigDecimal reportCashOut;
+    private BigDecimal vouchersOut;
+    private BigDecimal gamesPlayed;
+    private BigDecimal amountBet;
+
+    // Physical count
+    private BigDecimal physicalCash;
+
+    // Derived
+    private BigDecimal netFromReport;
+    private BigDecimal difference;
+
+
+    private String remarks;
 }
