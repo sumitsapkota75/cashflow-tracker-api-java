@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.*;
 public class PeriodController {
 
     final PeriodService periodService;
-    final PeriodMapper periodMapper;
 
-    @GetMapping("/{id}")
+    // Get all periods for business ID
+    @GetMapping("business/{id}")
     public ResponseEntity<Page<PeriodResponse>> getAllPeriodById(
             @PathVariable String id,
             Pageable pageable
@@ -42,5 +42,20 @@ public class PeriodController {
             @RequestBody ClosePeriodRequest request
     ){
         return ResponseEntity.ok(periodService.closePeriod(request,"1234"));
+    }
+
+    @GetMapping("/active/{businessId}")
+    public ResponseEntity<PeriodResponse> getActivePeriod(
+            @PathVariable String businessId
+    ) {
+        return ResponseEntity.ok(periodService.getActivePeriod(businessId));
+    }
+
+    // get single period by period id
+    @GetMapping("/{id}")
+    public ResponseEntity<PeriodResponse> getPeriodByPeriodId(
+            @PathVariable String id
+    ) {
+        return ResponseEntity.ok(periodService.getPeriodById(id));
     }
 }

@@ -86,15 +86,17 @@ public class PeriodService {
         return periodRepository.findByBusinessIdAndStatus(
                 businessId, PeriodStatus.OPEN
         ).map(periodMapper::toResponse).orElseThrow(() ->
-                new IllegalStateException("No active period found")
+                new NotFoundException("No active period found")
         );
     }
 
+    // get all periods for business ID
     public Page<PeriodResponse> getAllPeriod(String businessId, Pageable pageable) {
         return periodRepository.findAllByBusinessId(businessId,pageable)
                 .map(periodMapper::toResponse);
     }
 
+    // get period by period_id
     public PeriodResponse getPeriodById(String periodId) {
         return periodRepository.findById(periodId).map(periodMapper::toResponse)
                 .orElseThrow(() -> new IllegalArgumentException("Period not found"));
