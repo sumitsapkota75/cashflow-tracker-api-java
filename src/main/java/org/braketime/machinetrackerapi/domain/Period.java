@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -25,10 +26,15 @@ public class Period {
     private String businessId;
 
     @Indexed
-    private LocalDate businessDate; // 2026-01-15
+    private LocalDate businessDate;
 
     private PeriodStatus status;
-    // OPEN, CLOSED
+
+    private BigDecimal totalCashInOpen = BigDecimal.ZERO;
+    private BigDecimal totalCashOutOpen = BigDecimal.ZERO;
+
+    private BigDecimal totalCashInClose = BigDecimal.ZERO;
+    private BigDecimal totalCashOutClose = BigDecimal.ZERO;
 
     private LocalDateTime openedAt;
     private LocalDateTime closedAt;
