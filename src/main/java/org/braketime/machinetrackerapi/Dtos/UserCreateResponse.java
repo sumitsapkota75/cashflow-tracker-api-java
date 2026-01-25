@@ -11,4 +11,5 @@ public class UserCreateResponse {
     private String role;
     private String businessId;
     private boolean active;
+    private BusinessSummaryResponse business;
 }

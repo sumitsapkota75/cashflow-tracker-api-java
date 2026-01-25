@@ -44,7 +44,7 @@ public class DataInitializer {
                 .email(ownerEmail)
                 .passwordHash(passwordEncoder.encode("admin123"))
                 .role("OWNER")
-                .businessId(UUID.randomUUID().toString())
+                .businessId(null)
                 .active(true)
                 .build();
 

@@ -14,4 +14,6 @@ public interface BusinessRepository extends MongoRepository<Business, String> {
 
     Page<Business> findAllByActive(boolean active, Pageable pageable);
 
+    Optional<Business> findBusinessById(String id);
+
 }
