@@ -2,7 +2,6 @@ package org.braketime.machinetrackerapi.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.braketime.machinetrackerapi.Dtos.MachineResponse;
 import org.braketime.machinetrackerapi.domain.Business;
 import org.braketime.machinetrackerapi.domain.Machine;
 import org.braketime.machinetrackerapi.repository.MachineRepository;
