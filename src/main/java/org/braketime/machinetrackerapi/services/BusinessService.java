@@ -5,13 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.braketime.machinetrackerapi.Dtos.BusinessCreateUpdateRequest;
 import org.braketime.machinetrackerapi.Dtos.BusinessResponse;
 import org.braketime.machinetrackerapi.domain.Business;
+import org.braketime.machinetrackerapi.domain.Machine;
 import org.braketime.machinetrackerapi.exception.BadRequestException;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
 import org.braketime.machinetrackerapi.mapper.BusinessMapper;
 import org.braketime.machinetrackerapi.repository.BusinessRepository;
+import org.braketime.machinetrackerapi.repository.MachineRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,14 +23,22 @@ public class BusinessService {
 
     private final BusinessRepository repository;
     private final BusinessMapper businessMapper;
+    private final MachineRepository machineRepository;
+    private final MachineService machineService;
 
     // Create
     public BusinessResponse createBusiness(BusinessCreateUpdateRequest request){
         if (repository.existsByNameAndActive(request.getName(), true)){
             throw new BadRequestException("Business already exists with same name");
         }
-        Business createdBusiness = businessMapper.toEntity(request);
-        return businessMapper.toDto(repository.save(createdBusiness));
+        Business business = businessMapper.toEntity(request);
+        Business createdBusiness = repository.save(business);
+        List<String> machineIds = machineService.createMachineForBusiness(business);
+        business.setMachineIds(machineIds);
+
+        createdBusiness = repository.save(business);
+
+        return businessMapper.toDto(createdBusiness);
     }
 
     //getbyID

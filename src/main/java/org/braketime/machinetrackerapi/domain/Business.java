@@ -8,6 +8,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Document(collection = "businesses")
@@ -25,6 +27,7 @@ public class Business {
     private Integer numberOfMachines;
     @CreatedDate
     private LocalDateTime createdAt;
+    private List<String> machineIds = new ArrayList<>();
     @LastModifiedDate
     private LocalDateTime updatedAt;
     private boolean active = true;

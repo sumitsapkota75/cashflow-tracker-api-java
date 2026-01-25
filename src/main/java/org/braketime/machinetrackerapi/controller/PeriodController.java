@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.ClosePeriodRequest;
 import org.braketime.machinetrackerapi.Dtos.OpenPeriodRequest;
 import org.braketime.machinetrackerapi.Dtos.PeriodResponse;
-import org.braketime.machinetrackerapi.domain.Period;
-import org.braketime.machinetrackerapi.mapper.PeriodMapper;
 import org.braketime.machinetrackerapi.services.PeriodService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
