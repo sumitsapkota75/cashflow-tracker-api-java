@@ -38,7 +38,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> getUsers(){
         log.info("Get users api hit");
-        List<User> users = userRepository.getAllByIsActive(true);
+        List<User> users = userRepository.getAllByActive(true);
         List<UserCreateResponse> response = users.stream()
                 .map(userResponseMapper::toResponse).toList();
         return ResponseEntity.ok(response);

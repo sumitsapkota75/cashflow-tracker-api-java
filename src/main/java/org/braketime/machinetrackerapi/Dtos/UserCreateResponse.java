@@ -8,7 +8,7 @@ import lombok.Data;
 public class UserCreateResponse {
     private String id;
     private String email;
-    private String roleId;
+    private String role;
     private String businessId;
     private boolean active;
 }

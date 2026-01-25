@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends MongoRepository<User,String> {
     Optional<User> findByEmail(String email);
-    List<User> getAllByIsActive(boolean active);
+    List<User> getAllByActive(boolean active);
 }

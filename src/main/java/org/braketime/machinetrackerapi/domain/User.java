@@ -29,5 +29,5 @@ public class User {
     private String role;
     private String businessId;
 
-    private boolean isActive = true;
+    private boolean active = true;
 }

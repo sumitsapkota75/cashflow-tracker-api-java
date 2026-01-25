@@ -45,7 +45,7 @@ public class DataInitializer {
                 .passwordHash(passwordEncoder.encode("admin123"))
                 .role("OWNER")
                 .businessId(UUID.randomUUID().toString())
-                .isActive(true)
+                .active(true)
                 .build();
 
         userRepository.save(owner);
