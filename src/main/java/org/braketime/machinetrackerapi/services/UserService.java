@@ -53,7 +53,8 @@ public class UserService {
                     business.getId(),
                     business.getName(),
                     business.getLocation(),
-                    business.getCreatedAt()
+                    business.getCreatedAt(),
+                    business.getNumberOfMachines()
             );
         }
         return new UserCreateResponse(

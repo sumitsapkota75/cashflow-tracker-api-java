@@ -11,6 +11,6 @@ public class BusinessSummaryResponse{
     private String id;
     private String name;
     private String location;
-
     private LocalDateTime createdAt;
+    private Integer numberOfMachines;
 }

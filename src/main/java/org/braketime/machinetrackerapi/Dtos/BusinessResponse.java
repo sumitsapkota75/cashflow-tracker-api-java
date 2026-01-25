@@ -12,7 +12,7 @@ public class BusinessResponse {
     private String id;
     private String name;
     private String location;
-
+    private Integer numberOfMachines;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
