@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.braketime.machinetrackerapi.domain.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -40,28 +41,19 @@ public class JwtUtil {
     }
 
     // Generate JWT token for a given username/email and role
-    public String generateToken(String username,String userId, String role) {
-        log.info("Generating JWT for user: {}, role: {}", username, role);
+    public String generateToken(User user) {
+        log.info("Generating JWT for user: {}, role: {}", user.getEmail(), user.getRole());
 
         return Jwts.builder()
-                .subject(username)
-                .claim("userId",userId)
-                .claim("role", role) // include role as claim
+                .subject(user.getEmail())
+                .claim("userId",user.getId())
+                .claim("role", user.getRole()) // include role as claim
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    // Extract username/email from JWT
-    public String extractUsername(String token) {
-        return extractClaims(token).getSubject();
-    }
-
-    // Extract role from JWT
-    public String extractRole(String token) {
-        return (String) extractClaims(token).get("role");
-    }
 
     // Validate JWT token
     public boolean isTokenValid(String token) {

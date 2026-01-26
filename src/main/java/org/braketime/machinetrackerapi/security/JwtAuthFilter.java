@@ -29,7 +29,6 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -43,6 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String authHeader = request.getHeader("Authorization");
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
@@ -51,65 +51,37 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String token = authHeader.substring(7);
             Claims claims = jwtUtil.extractClaims(token);
+
             String email = claims.getSubject();
             String userId = claims.get("userId", String.class);
             String role = claims.get("role", String.class);
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                List<SimpleGrantedAuthority> authorities =
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                JwtUserPrincipal principal =
+                        new JwtUserPrincipal(userId, email, role, authorities);
 
-                JwtUserPrincipal principal = new JwtUserPrincipal(
-                        userId,
-                        email,
-                        role,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                );
-
-                UsernamePasswordAuthenticationToken authToken =
+                UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 principal,
                                 null,
-                                principal.getAuthorities()
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
                         );
 
-                authToken.setDetails(
+                authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
             chain.doFilter(request, response);
-        }
-        catch (ExpiredJwtException e) {
-            sendError(response, request, HttpStatus.UNAUTHORIZED,
-                    "Token expired", "Please login again.");
-        }
-        catch (JwtException e) {
-            sendError(response, request, HttpStatus.UNAUTHORIZED,
-                    "Invalid token", "Authentication token is invalid.");
-        }
-        catch (Exception e) {
-            sendError(response, request, HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Authentication error", "Authentication failed.");
-        }
-    }
 
-    private void sendError(HttpServletResponse response,
-                           HttpServletRequest request,
-                           HttpStatus status,
-                           String error,
-                           String message) throws IOException {
-
-        ErrorResponse body = ErrorResponse.builder()
-                .timeStamp(LocalDateTime.now())
-                .status(status.value())
-                .error(error)
-                .message(message)
-                .path(request.getRequestURI())
-                .build();
-
-        response.setStatus(status.value());
-        response.setContentType("application/json");
-        response.getWriter().write(objectMapper.writeValueAsString(body));
+        } catch (ExpiredJwtException e) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Token expired");
+        } catch (JwtException e) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid token");
+        }
     }
 }
