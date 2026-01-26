@@ -24,4 +24,10 @@ public class PeriodResponse {
 
     private String openedByUserId;
     private String closedByUserId;
+    private BigDecimal safeDrop;
+    private BigDecimal payout;
+    private BigDecimal physicalCashCollected;
+
+    private BigDecimal netOpen;
+    private BigDecimal netClose;
 }

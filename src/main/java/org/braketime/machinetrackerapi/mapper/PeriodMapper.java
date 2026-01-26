@@ -17,6 +17,8 @@ public interface PeriodMapper {
     @Mapping(target = "openedAt", ignore = true)
     @Mapping(target = "closedAt", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "netOpen", ignore = true)
+    @Mapping(target = "netClose", ignore = true)
     Period toEntity(OpenPeriodRequest request);
 
 

@@ -32,12 +32,18 @@ public class Period {
 
     private BigDecimal totalCashInOpen = BigDecimal.ZERO;
     private BigDecimal totalCashOutOpen = BigDecimal.ZERO;
+    private BigDecimal netOpen = BigDecimal.ZERO;
 
     private BigDecimal totalCashInClose = BigDecimal.ZERO;
     private BigDecimal totalCashOutClose = BigDecimal.ZERO;
+    private BigDecimal netClose = BigDecimal.ZERO;
 
     private LocalDateTime openedAt;
     private LocalDateTime closedAt;
+
+    private BigDecimal safeDrop;
+    private BigDecimal payout;
+    private BigDecimal physicalCashCollected;
 
     private String openedByUserId;
     private String closedByUserId;

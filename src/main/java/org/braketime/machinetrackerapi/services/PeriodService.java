@@ -11,6 +11,7 @@ import org.braketime.machinetrackerapi.exception.BadRequestException;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
 import org.braketime.machinetrackerapi.mapper.PeriodMapper;
 import org.braketime.machinetrackerapi.repository.PeriodRepositoy;
+import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,16 @@ public class PeriodService {
     private final PeriodMapper periodMapper;
 
     public PeriodResponse openPeriod(OpenPeriodRequest request, String userId){
+        String businessId = SecurityUtils.businessId();
         LocalDate businessDate =
                 request.getBusinessDate() != null
                         ? request.getBusinessDate()
                         : LocalDate.now();
 
+        // TODO: make sure there exists only one open period for the business
         boolean alreadyOpen =
                 periodRepository.existsByBusinessIdAndBusinessDateAndStatus(
-                        request.getBusinessId(),
+                        businessId,
                         businessDate,
                         PeriodStatus.OPEN
                 );
@@ -48,6 +51,8 @@ public class PeriodService {
         period.setStatus(PeriodStatus.OPEN);
         period.setOpenedAt(LocalDateTime.now());
         period.setOpenedByUserId(userId);
+        period.setBusinessId(businessId);
+        period.setNetOpen(request.getTotalCashInOpen().subtract(request.getTotalCashOutOpen()));
 
         periodRepository.save(period);
         return periodMapper.toResponse(period);

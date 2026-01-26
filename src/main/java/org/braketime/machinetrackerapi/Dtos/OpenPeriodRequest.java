@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Data
 public class OpenPeriodRequest {
-    private String businessId;
     private LocalDate businessDate;
     private BigDecimal totalCashInOpen;
     private BigDecimal totalCashOutOpen;

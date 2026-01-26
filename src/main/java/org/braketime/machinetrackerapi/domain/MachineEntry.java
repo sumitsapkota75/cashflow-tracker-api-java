@@ -1,6 +1,7 @@
 package org.braketime.machinetrackerapi.domain;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,16 +42,19 @@ public class MachineEntry {
     // DAY_START, MID_DAY, PAYOUT, BANK_DEPOSIT
 
     // From machine slip
+    @NotNull
     private BigDecimal reportCashIn;
+    @NotNull
     private BigDecimal reportCashOut;
-    private BigDecimal vouchersOut;
-    private BigDecimal gamesPlayed;
-    private BigDecimal amountBet;
 
     // Physical count
+    @NotNull
     private BigDecimal physicalCash;
 
+    private BigDecimal safeDroppedAmount;
+
     // Derived
+    @NotNull
     private BigDecimal netFromReport;
     private BigDecimal difference;
 
