@@ -15,6 +15,7 @@ import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
@@ -54,8 +55,19 @@ public class MachineEntryService {
                 machineEntry.getMachineId()
         );
         // Aggregate in Period data
-        openPeriod.setSafeDrop(openPeriod.getSafeDrop().add(machineEntry.getSafeDroppedAmount()));
-        openPeriod.setPhysicalCashCollected(openPeriod.getPhysicalCashCollected().add(machineEntry.getPhysicalCash()));
+        BigDecimal currentSafeDrop =
+                openPeriod.getSafeDrop() == null
+                        ? BigDecimal.ZERO
+                        : openPeriod.getSafeDrop();
+
+        BigDecimal machineSafeDrop =
+                machineEntry.getSafeDroppedAmount() == null
+                        ? BigDecimal.ZERO
+                        : machineEntry.getSafeDroppedAmount();
+        openPeriod.setSafeDrop(currentSafeDrop.add(machineSafeDrop));
+
+        BigDecimal periodPhysicalCash = openPeriod.getPhysicalCashCollected() == null ? BigDecimal.ZERO : openPeriod.getPhysicalCashCollected();
+        openPeriod.setPhysicalCashCollected(periodPhysicalCash.add(machineEntry.getPhysicalCash()));
         periodRepositoy.save(openPeriod);
         return machineEntryMapper.toResponse(machineEntry);
     }

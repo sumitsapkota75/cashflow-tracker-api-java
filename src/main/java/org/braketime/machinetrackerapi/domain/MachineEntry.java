@@ -38,8 +38,7 @@ public class MachineEntry {
     private LocalDateTime openedAt;
     private LocalDateTime closedAt;
 
-    private OpenReason reason;
-    // DAY_START, MID_DAY, PAYOUT, BANK_DEPOSIT
+    private String reason;
 
     // From machine slip
     @NotNull
