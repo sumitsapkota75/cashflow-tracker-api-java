@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.ClosePeriodRequest;
 import org.braketime.machinetrackerapi.Dtos.OpenPeriodRequest;
 import org.braketime.machinetrackerapi.Dtos.PeriodResponse;
+import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.braketime.machinetrackerapi.services.PeriodService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,13 +34,15 @@ public class PeriodController {
     public ResponseEntity<PeriodResponse> openPeriod(
             @RequestBody OpenPeriodRequest request
             ){
-        return ResponseEntity.ok(periodService.openPeriod(request,"1234"));
+        String userId = SecurityUtils.userId();
+        return ResponseEntity.ok(periodService.openPeriod(request,userId));
     }
     @PostMapping("/close")
     public ResponseEntity<PeriodResponse> closePeriod(
             @RequestBody ClosePeriodRequest request
     ){
-        return ResponseEntity.ok(periodService.closePeriod(request,"1234"));
+        String userId = SecurityUtils.userId();
+        return ResponseEntity.ok(periodService.closePeriod(request,userId));
     }
 
     @GetMapping("/active/{businessId}")

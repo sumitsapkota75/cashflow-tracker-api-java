@@ -26,7 +26,6 @@ public class PeriodService {
     private final PeriodMapper periodMapper;
 
     public PeriodResponse openPeriod(OpenPeriodRequest request, String userId){
-
         LocalDate businessDate =
                 request.getBusinessDate() != null
                         ? request.getBusinessDate()
