@@ -13,6 +13,7 @@ public class JwtUserPrincipal implements UserDetails {
 
     private final String userId;
     private final String email;
+    private final String businessId;
     private final String role;
     private final Collection<? extends GrantedAuthority> authorities;
 

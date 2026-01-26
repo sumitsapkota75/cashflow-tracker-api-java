@@ -35,8 +35,10 @@ public class BusinessController {
     ){
         String userId = SecurityUtils.userId();
         String role = SecurityUtils.role();
+        String businessId = SecurityUtils.businessId();
         log.info("USER_ID {}",userId);
         log.info("Role {}",role);
+        log.info("businessId {}",businessId);
 
         return ResponseEntity.ok(businessService.getAll(isActive,pageable));
     }
