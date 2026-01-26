@@ -40,11 +40,12 @@ public class JwtUtil {
     }
 
     // Generate JWT token for a given username/email and role
-    public String generateToken(String username, String role) {
+    public String generateToken(String username,String userId, String role) {
         log.info("Generating JWT for user: {}, role: {}", username, role);
 
         return Jwts.builder()
                 .subject(username)
+                .claim("userId",userId)
                 .claim("role", role) // include role as claim
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
@@ -75,7 +76,7 @@ public class JwtUtil {
         }
     }
 
-    private Claims extractClaims(String token) {
+    public Claims extractClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey()) // Now correctly resolves SecretKey
                 .build()

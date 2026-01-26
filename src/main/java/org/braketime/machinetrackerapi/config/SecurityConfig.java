@@ -1,7 +1,6 @@
 package org.braketime.machinetrackerapi.config;
 
 import lombok.RequiredArgsConstructor;
-import org.braketime.machinetrackerapi.security.CustomUserDetailsService;
 import org.braketime.machinetrackerapi.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
-    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

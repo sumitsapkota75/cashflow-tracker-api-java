@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.BusinessCreateUpdateRequest;
 import org.braketime.machinetrackerapi.Dtos.BusinessResponse;
+import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.braketime.machinetrackerapi.services.BusinessService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,11 @@ public class BusinessController {
             @RequestParam(defaultValue = "true") boolean isActive,
             Pageable pageable
     ){
+        String userId = SecurityUtils.userId();
+        String role = SecurityUtils.role();
+        log.info("USER_ID {}",userId);
+        log.info("Role {}",role);
+
         return ResponseEntity.ok(businessService.getAll(isActive,pageable));
     }
 
