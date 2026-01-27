@@ -40,7 +40,7 @@ public class MachineEntryService {
     private final MachineEntryMapper machineEntryMapper;
     private final MachineEntryRepository machineEntryRepository;
 
-    public MachineEntryResponse createEntry(MachineEntryRequest request){
+    public MachineEntryResponse createEntry(MachineEntryRequest request, String username){
 
         String userId = SecurityUtils.userId();
         String businessId = SecurityUtils.businessId();
@@ -57,6 +57,7 @@ public class MachineEntryService {
         machineEntry.setOpenedByUserId(userId);
         machineEntry.setPeriodId(openPeriod.getId());
         machineEntry.setOpenedAt(LocalDateTime.now());
+        machineEntry.setUserName(username);
 
         machineEntryRepository.save(machineEntry);
 

@@ -23,5 +23,6 @@ public class SecurityUtils {
     public static String businessId() {
         return currentUser().getBusinessId();
     }
+    public static String email(){return currentUser().getEmail();}
 }
 

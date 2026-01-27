@@ -57,6 +57,8 @@ public class MachineEntry {
     private BigDecimal netFromReport;
     private BigDecimal difference;
 
+    private String username;
+
 
     private String remarks;
 }

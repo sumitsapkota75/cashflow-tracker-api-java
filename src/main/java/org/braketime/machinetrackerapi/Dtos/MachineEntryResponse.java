@@ -29,4 +29,6 @@ public class MachineEntryResponse {
     private BigDecimal difference;
 
     private LocalDateTime openedAt;
+
+    private String username;
 }

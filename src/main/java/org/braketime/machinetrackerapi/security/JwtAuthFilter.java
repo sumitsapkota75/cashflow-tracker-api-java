@@ -35,7 +35,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain chain)
             throws ServletException, IOException {
-        log.info("API HIT IN FILTER");
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
             chain.doFilter(request, response);
             return;
@@ -66,15 +65,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 List<SimpleGrantedAuthority> authorities =
                         List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
                 JwtUserPrincipal principal =
-                        new JwtUserPrincipal(userId, email,businessId, role, authorities);
+                        new JwtUserPrincipal(userId, email, businessId, role, authorities);
 
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                principal,
-                                null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                        );
+                        new UsernamePasswordAuthenticationToken(principal, null, authorities);
 
                 authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
