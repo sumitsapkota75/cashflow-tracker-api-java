@@ -9,6 +9,7 @@ import org.braketime.machinetrackerapi.domain.Business;
 import org.braketime.machinetrackerapi.domain.User;
 import org.braketime.machinetrackerapi.exception.BadRequestException;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
+import org.braketime.machinetrackerapi.mapper.UserRequestMapper;
 import org.braketime.machinetrackerapi.repository.BusinessRepository;
 import org.braketime.machinetrackerapi.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -65,7 +66,7 @@ public class UserService {
                 user.getRole(),
                 user.getBusinessId(),
                 user.isActive(),
-                businessSummary
+            businessSummary
         );
 
     }
@@ -79,7 +80,39 @@ public class UserService {
     public UserCreateResponse getUser(String id){
         User user = userRepository.findById(id)
                 .orElseThrow(()->new NotFoundException("user not found"));
-
         return loadUsersWithBusiness(user);
     }
+
+    public User updateUser(RegisterUserRequest request, String id){
+        User user = userRepository.findById(id)
+                .orElseThrow(()->new NotFoundException("user not found"));
+
+
+        if (hasText(request.getUsername())) {
+            user.setUsername(request.getUsername().trim());
+        }
+
+        if (hasText(request.getRole())) {
+            user.setRole(request.getRole().trim());
+        }
+
+        if (hasText(request.getPassword())) {
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+
+
+        if (hasText(request.getBusinessId()) && !request.getBusinessId().equals(user.getBusinessId())) {
+            Business business = businessRepository.findBusinessById(request.getBusinessId())
+                    .orElseThrow(() -> new NotFoundException("No business found"));
+
+            log.info("inside business {}",business.getName());
+            user.setBusinessName(business.getName());
+            user.setBusinessId(request.getBusinessId());
+        }
+        return userRepository.save(user);
+    }
+    private boolean hasText(String s) {
+        return s != null && !s.isBlank();
+    }
 }
+

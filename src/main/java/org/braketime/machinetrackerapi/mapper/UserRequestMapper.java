@@ -5,6 +5,8 @@ import org.braketime.machinetrackerapi.domain.User;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface UserResponseMapper {
-    UserCreateResponse toResponse(User user);
+public interface UserRequestMapper {
+
+    User toEntity(User user);
+
 }

@@ -19,4 +19,5 @@ public class RegisterUserRequest {
     private String role;
     @NotBlank(message="Business is required")
     private String businessId;
+
 }
