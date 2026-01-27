@@ -25,6 +25,8 @@ public class Winner {
     private String businessId;
 
     private String playerName;
+    private String playerContact;
+    private LocalDateTime winningDate;
 
     private BigDecimal totalWinAmount;
     private BigDecimal amountPaid;
@@ -33,4 +35,5 @@ public class Winner {
     private String status;
 
     private LocalDateTime createdAt;
+    private String createdByUsername;
 }
