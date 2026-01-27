@@ -40,12 +40,12 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Generate JWT token for a given username/email and role
+    // Generate JWT token for a given username and role
     public String generateToken(User user) {
-        log.info("Generating JWT for user: {}, role: {}", user.getEmail(), user.getRole());
+        log.info("Generating JWT for user: {}, role: {}", user.getUsername(), user.getRole());
 
         return Jwts.builder()
-                .subject(user.getEmail())
+                .subject(user.getUsername())
                 .claim("userId",user.getId())
                 .claim("username", user.getUsername())
                 .claim("businessId", user.getBusinessId())

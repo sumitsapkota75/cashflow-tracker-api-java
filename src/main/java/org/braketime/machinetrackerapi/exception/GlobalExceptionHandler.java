@@ -92,7 +92,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // 🔹 4. AUTHENTICATION FAILED (Wrong email/password)
+    // 🔹 4. AUTHENTICATION FAILED (Wrong username/password)
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentials(
             BadCredentialsException ex,
@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
         return buildError(
                 HttpStatus.UNAUTHORIZED,
                 "Unauthorized",
-                "Invalid email or password",
+                "Invalid username or password",
                 request
         );
     }

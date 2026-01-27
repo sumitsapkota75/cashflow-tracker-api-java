@@ -1,7 +1,6 @@
 package org.braketime.machinetrackerapi.config;
 
 
-import org.braketime.machinetrackerapi.domain.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.domain.User;
 import org.braketime.machinetrackerapi.repository.UserRepository;
@@ -11,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.braketime.machinetrackerapi.repository.RoleRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.UUID;
 
 @Configuration
 @Slf4j

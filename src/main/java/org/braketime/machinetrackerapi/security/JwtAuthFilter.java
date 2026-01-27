@@ -57,7 +57,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             Claims claims = jwtUtil.extractClaims(token);
 
-            String email = claims.getSubject();
+            String username = claims.getSubject();
             String userId = claims.get("userId", String.class);
             String businessId = claims.get("businessId", String.class);
             String role = claims.get("role", String.class);
@@ -67,7 +67,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
                 JwtUserPrincipal principal =
-                        new JwtUserPrincipal(userId, email, businessId, role, authorities);
+                        new JwtUserPrincipal(userId, username, businessId, role, authorities);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(principal, null, authorities);

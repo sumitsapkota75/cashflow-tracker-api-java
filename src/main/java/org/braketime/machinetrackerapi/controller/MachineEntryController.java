@@ -26,7 +26,7 @@ public class MachineEntryController {
     public ResponseEntity<MachineEntryResponse> createMachineEntry(
             @RequestBody MachineEntryRequest request
             ){
-        String username = SecurityUtils.email();
+        String username = SecurityUtils.username();
         return ResponseEntity.ok(machineEntryService.createEntry(request, username));
     }
     @GetMapping("/{periodID}")

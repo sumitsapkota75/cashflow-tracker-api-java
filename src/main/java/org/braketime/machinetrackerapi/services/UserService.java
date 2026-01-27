@@ -28,13 +28,13 @@ public class UserService {
     private final BusinessRepository businessRepository;
 
     public UserCreateResponse createUser(RegisterUserRequest request){
-        if (userRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new BadRequestException("Email already registered");
+        if (userRepository.findByUsername(request.getUsername()).isPresent()){
+            throw new BadRequestException("Username already registered");
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         Optional<Business> business = businessRepository.findBusinessById(request.getBusinessId());
         User user = User.builder()
-                .email(request.getEmail())
+                .username(request.getUsername())
                 .passwordHash(encodedPassword)
                 .role(request.getRole())
                 .businessId(request.getBusinessId())
@@ -62,7 +62,7 @@ public class UserService {
         }
         return new UserCreateResponse(
                 user.getId(),
-                user.getEmail(),
+                user.getUsername(),
                 user.getRole(),
                 user.getBusinessId(),
                 user.isActive(),

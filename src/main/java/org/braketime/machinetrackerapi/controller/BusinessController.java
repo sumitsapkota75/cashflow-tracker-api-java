@@ -35,7 +35,6 @@ public class BusinessController {
     ){
         String userId = SecurityUtils.userId();
         String role = SecurityUtils.role();
-        String email = SecurityUtils.email();
 
         return ResponseEntity.ok(businessService.getAll(isActive,pageable));
     }

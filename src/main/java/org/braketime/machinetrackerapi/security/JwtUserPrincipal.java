@@ -12,14 +12,14 @@ import java.util.Collection;
 public class JwtUserPrincipal implements UserDetails {
 
     private final String userId;
-    private final String email;
+    private final String username;
     private final String businessId;
     private final String role;
     private final Collection<? extends GrantedAuthority> authorities;
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override
