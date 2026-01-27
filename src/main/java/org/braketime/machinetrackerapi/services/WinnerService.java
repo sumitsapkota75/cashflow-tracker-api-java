@@ -67,4 +67,8 @@ public class WinnerService {
         return winnerRepository.findAllByBusinessIdOrderByCreatedAtDesc(businessId)
                 .orElseThrow(() -> new NotFoundException("Winner not found for businessId: " + businessId));
     }
+
+    public Winner getWinnerById(String winnerId){
+        return winnerRepository.findById(winnerId).orElseThrow(()-> new NotFoundException("Winner not found"));
+    }
 }
