@@ -1,7 +1,9 @@
 package org.braketime.machinetrackerapi.services;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.braketime.machinetrackerapi.Dtos.BusinessRequest;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryRequest;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryResponse;
 import org.braketime.machinetrackerapi.domain.MachineEntry;
@@ -13,11 +15,21 @@ import org.braketime.machinetrackerapi.repository.MachineEntryRepository;
 import org.braketime.machinetrackerapi.repository.PeriodRepositoy;
 import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Objects;
+
 
 @Service
 @Slf4j
@@ -70,5 +82,24 @@ public class MachineEntryService {
         openPeriod.setPhysicalCashCollected(periodPhysicalCash.add(machineEntry.getPhysicalCash()));
         periodRepositoy.save(openPeriod);
         return machineEntryMapper.toResponse(machineEntry);
+    }
+
+
+    public List<MachineEntryResponse> getEntriesForPeriod(
+            String periodID, String businessId,LocalDate startDate, LocalDate endDate
+    ){
+        List<MachineEntry> entries;
+        if (startDate != null && endDate != null) {
+            entries =  machineEntryRepository.findByBusinessIdAndOpenedAtBetween(
+                    businessId,
+                    startDate.atStartOfDay(),
+                    endDate.atTime(LocalTime.MAX)
+            );
+        } else {
+            log.info("business id and period id: {} {}",businessId,periodID);
+            entries =  machineEntryRepository.findByBusinessIdAndPeriodId(businessId, periodID);
+        }
+        return entries.stream().map(machineEntryMapper::toResponse).toList();
+
     }
 }

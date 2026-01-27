@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryRequest;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryResponse;
+import org.braketime.machinetrackerapi.exception.NotFoundException;
+import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.braketime.machinetrackerapi.services.MachineEntryService;
-import org.braketime.machinetrackerapi.services.PeriodService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -25,6 +27,31 @@ public class MachineEntryController {
             @RequestBody MachineEntryRequest request
             ){
         return ResponseEntity.ok(machineEntryService.createEntry(request));
+    }
+    @GetMapping("/{periodID}")
+    public ResponseEntity<List<MachineEntryResponse>> getEntriesForPeriod(
+            @PathVariable String periodID,
+            @RequestParam(required = false) String businessIdParam,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ){
+        log.info("Entry list API");
+        String businessId;
+        String role = SecurityUtils.role();
+        if (!"OWNER".equals(role)) {
+            // Non-owners must always use their own businessId
+            businessId = SecurityUtils.businessId();
+        } else {
+            // Owner must provide businessId as query param
+            if (businessIdParam == null || businessIdParam.isEmpty()) {
+                throw new NotFoundException("OWNER must provide businessId as query parameter");
+            }
+            businessId = businessIdParam;
+        }
+        log.info("Resolved businessId={}", businessId);
+
+        return ResponseEntity.ok(machineEntryService.getEntriesForPeriod(periodID,businessId,startDate,endDate));
+
     }
 
 }

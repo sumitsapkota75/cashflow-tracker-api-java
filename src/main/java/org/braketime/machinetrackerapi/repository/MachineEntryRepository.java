@@ -15,7 +15,7 @@ public interface MachineEntryRepository extends MongoRepository<MachineEntry,Str
             String machineId
     );
 
-    List<MachineEntry> findAllByBusinessIdAndPeriodId(String businessId, String periodId, Limit limit);
+    List<MachineEntry> findByBusinessIdAndPeriodId(String businessId, String periodId);
     List<MachineEntry> findByOpenedByUserId(String userId);
     List<MachineEntry> findByBusinessIdAndOpenedAtBetween(
             String businessId,
