@@ -52,6 +52,7 @@ public class WinnerService {
                 .winningDate(request.getWinningDate())
                 .totalWinAmount(request.getTotalWinAmount())
                 .amountPaid(request.getAmountPaid())
+                .paymentPlan(request.getPaymentPlan())
                 .remainingAmount(remainingAmount)
                 .status(status)
                 .businessId(businessId)
