@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -25,16 +26,24 @@ public class WinnerService {
 
 
         // calculate remaining amount
-        BigDecimal remainingAmount = BigDecimal.ZERO;
-        BigDecimal amountPaid = request.getAmountPaid() == null ? BigDecimal.ZERO : request.getAmountPaid();
-        remainingAmount = request.getTotalWinAmount().subtract(amountPaid);
+        BigDecimal totalWin = Optional.ofNullable(request.getTotalWinAmount())
+                .orElse(BigDecimal.ZERO);
 
-        // hadnle status
+        BigDecimal amountPaid = Optional.ofNullable(request.getAmountPaid())
+                .orElse(BigDecimal.ZERO);
+
+        BigDecimal remainingAmount = totalWin.subtract(amountPaid);
+
         String status;
-        if (remainingAmount.compareTo(request.getTotalWinAmount()) <= 0){
+
+        if (remainingAmount.compareTo(BigDecimal.ZERO) == 0) {
             status = "PAID";
-        }else {
-            status = request.getStatus();
+        }
+        else if (amountPaid.compareTo(BigDecimal.ZERO) > 0) {
+            status = "PARTIALLY_PAID";
+        }
+        else {
+            status = "PENDING";
         }
 
         Winner winner = Winner.builder()
