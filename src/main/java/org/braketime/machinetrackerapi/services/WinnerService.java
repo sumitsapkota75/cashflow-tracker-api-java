@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,11 +23,18 @@ public class WinnerService {
         String userName = SecurityUtils.username();
         String businessId = SecurityUtils.businessId();
 
+
         // calculate remaining amount
-        if (request.getAmountPaid() != null) {
-            request.setRemainingAmount(request.getTotalWinAmount().subtract(request.getAmountPaid()));
-        } else {
-            request.setRemainingAmount(request.getTotalWinAmount());
+        BigDecimal remainingAmount = BigDecimal.ZERO;
+        BigDecimal amountPaid = request.getAmountPaid() == null ? BigDecimal.ZERO : request.getAmountPaid();
+        remainingAmount = request.getTotalWinAmount().subtract(amountPaid);
+
+        // hadnle status
+        String status;
+        if (remainingAmount.compareTo(request.getTotalWinAmount()) <= 0){
+            status = "PAID";
+        }else {
+            status = request.getStatus();
         }
 
         Winner winner = Winner.builder()
@@ -34,10 +43,11 @@ public class WinnerService {
                 .winningDate(request.getWinningDate())
                 .totalWinAmount(request.getTotalWinAmount())
                 .amountPaid(request.getAmountPaid())
-                .remainingAmount(request.getRemainingAmount())
-                .status(request.getStatus())
+                .remainingAmount(remainingAmount)
+                .status(status)
                 .businessId(businessId)
                 .createdByUsername(userName)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         return winnerRepository.save(winner);
