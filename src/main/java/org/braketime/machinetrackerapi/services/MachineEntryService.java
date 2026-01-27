@@ -57,7 +57,7 @@ public class MachineEntryService {
         machineEntry.setOpenedByUserId(userId);
         machineEntry.setPeriodId(openPeriod.getId());
         machineEntry.setOpenedAt(LocalDateTime.now());
-        machineEntry.setUserName(username);
+        machineEntry.setUsername(username);
 
         machineEntryRepository.save(machineEntry);
 

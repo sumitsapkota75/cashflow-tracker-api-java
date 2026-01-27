@@ -33,15 +33,15 @@ public class DataInitializer {
     }
 
     public void seedOwner(String roleName){
-        String ownerEmail = "owner@system.com";
-        if (userRepository.findByEmail(ownerEmail).isPresent()){
+        String ownerUsername = "owner";
+        if (userRepository.findByUsername(ownerUsername).isPresent()){
             log.info(".....DEFAULT OWNER ALREADY EXISTS.....");
             return;
         }
 
         // create owner user:
         User owner = User.builder()
-                .email(ownerEmail)
+                .username("owner")
                 .passwordHash(passwordEncoder.encode("admin123"))
                 .role("OWNER")
                 .businessId(null)
@@ -51,7 +51,7 @@ public class DataInitializer {
         userRepository.save(owner);
 
         log.info("✅ Default OWNER user created");
-        log.info("   Email    : owner@system.com");
+        log.info("   Username    : owner");
         log.info("   Password : admin123");
     }
 }

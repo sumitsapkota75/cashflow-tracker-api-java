@@ -22,7 +22,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
         Map<String,Object> response = authService.login(
-                request.getEmail(),
+                request.getUsername(),
                 request.getPassword()
         );
 
