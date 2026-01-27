@@ -3,6 +3,7 @@ package org.braketime.machinetrackerapi.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.Response;
 import org.braketime.machinetrackerapi.Dtos.BusinessCreateUpdateRequest;
 import org.braketime.machinetrackerapi.Dtos.BusinessResponse;
 import org.braketime.machinetrackerapi.security.SecurityUtils;
@@ -33,9 +34,6 @@ public class BusinessController {
             @RequestParam(defaultValue = "true") boolean isActive,
             Pageable pageable
     ){
-        String userId = SecurityUtils.userId();
-        String role = SecurityUtils.role();
-
         return ResponseEntity.ok(businessService.getAll(isActive,pageable));
     }
 
@@ -44,6 +42,14 @@ public class BusinessController {
             @PathVariable String id
     ){
         return ResponseEntity.ok(businessService.getByID(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateBusiness(
+            @PathVariable String id,
+            @RequestBody BusinessCreateUpdateRequest request
+    ){
+        return ResponseEntity.ok(businessService.update(id, request));
     }
 
     @PutMapping("/{id}/disable")
