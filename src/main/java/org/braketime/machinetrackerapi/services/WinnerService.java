@@ -72,9 +72,10 @@ public class WinnerService {
         if (amountPaid.compareTo(BigDecimal.ZERO) >= 0){
             WinnerPayout payout = new WinnerPayout();
             payout.setWinnerId(winnerData.getId());
+            payout.setWinnerName(winnerData.getPlayerName());
             payout.setAmount(amountPaid);
             payout.setPayoutDate(LocalDateTime.now());
-            payout.setStatus("COMPLETED");
+            payout.setStatus("IN_PROGRESS");
             payout.setRemarks("Initial Payout");
             payout.setReasonType("WINNER_PAYOUT");
 
