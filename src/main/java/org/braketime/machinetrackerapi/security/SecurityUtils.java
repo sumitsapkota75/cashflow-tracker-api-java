@@ -16,6 +16,7 @@ public class SecurityUtils {
         return currentUser().getUserId();
     }
 
+
     public static String role() {
         return currentUser().getRole();
     }

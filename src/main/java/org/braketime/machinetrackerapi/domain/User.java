@@ -29,6 +29,7 @@ public class User {
     private String role;
     @Indexed
     private String businessId;
+    private String businessName;
 
     private boolean active = true;
 }

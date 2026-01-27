@@ -24,7 +24,7 @@ public class AuthService {
     public Map<String, Object> login(String email, String password) {
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Invalid credentials"));
+                .orElseThrow(() -> new BadRequestException("Invalid credentials"));
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new BadRequestException("Invalid credentials");

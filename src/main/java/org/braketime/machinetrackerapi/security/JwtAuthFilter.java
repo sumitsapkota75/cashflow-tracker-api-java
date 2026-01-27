@@ -35,11 +35,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain chain)
             throws ServletException, IOException {
-
+        log.info("API HIT IN FILTER");
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+            chain.doFilter(request, response);
+            return;
+        }
         if (request.getRequestURI().startsWith("/auth/")) {
             chain.doFilter(request, response);
             return;
         }
+
+
 
         String authHeader = request.getHeader("Authorization");
 

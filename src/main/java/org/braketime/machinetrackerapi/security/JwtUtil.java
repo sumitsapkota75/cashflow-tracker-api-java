@@ -49,6 +49,7 @@ public class JwtUtil {
                 .claim("userId",user.getId())
                 .claim("businessId", user.getBusinessId())
                 .claim("role", user.getRole())
+                .claim("businessName",user.getBusinessName())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey())

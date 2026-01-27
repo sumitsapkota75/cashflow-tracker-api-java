@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -31,11 +32,13 @@ public class UserService {
             throw new BadRequestException("Email already registered");
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword());
+        Optional<Business> business = businessRepository.findBusinessById(request.getBusinessId());
         User user = User.builder()
                 .email(request.getEmail())
                 .passwordHash(encodedPassword)
                 .role(request.getRole())
                 .businessId(request.getBusinessId())
+                .businessName(business.get().getName())
                 .active(true)
                 .build();
         userRepository.save(user);
