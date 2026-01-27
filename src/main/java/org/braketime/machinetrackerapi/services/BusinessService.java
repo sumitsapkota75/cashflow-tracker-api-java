@@ -32,7 +32,8 @@ public class BusinessService {
             throw new BadRequestException("Business already exists with same name");
         }
         Business business = businessMapper.toEntity(request);
-        Business createdBusiness = repository.save(business);
+        repository.save(business);
+        Business createdBusiness;
         List<String> machineIds = machineService.createMachineForBusiness(business);
         business.setMachineIds(machineIds);
 

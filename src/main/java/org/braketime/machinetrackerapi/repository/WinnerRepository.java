@@ -9,5 +9,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface WinnerRepository extends MongoRepository<Winner,String> {
     Optional<Winner> findByIdAndBusinessId(String id, String businessId);
     Optional<List<Winner>> findAllByBusinessIdOrderByCreatedAtDesc(String businessId);
+    Optional<Winner> findById(String id);
     
 }
