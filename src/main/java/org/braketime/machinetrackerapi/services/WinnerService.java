@@ -2,14 +2,17 @@ package org.braketime.machinetrackerapi.services;
 
 import org.braketime.machinetrackerapi.Dtos.WinnerCreateRequest;
 import org.braketime.machinetrackerapi.domain.Winner;
+import org.braketime.machinetrackerapi.domain.WinnerPayout;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
 import org.braketime.machinetrackerapi.repository.WinnerRepository;
+import org.braketime.machinetrackerapi.repository.WinnerPayoutRepository;
 import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +21,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class WinnerService {
     private final WinnerRepository winnerRepository;
+    private final WinnerPayoutRepository winnerPayoutRepository;
 
 
     public Winner createWinner(WinnerCreateRequest request) {
@@ -46,6 +50,8 @@ public class WinnerService {
             status = "PENDING";
         }
 
+
+
         Winner winner = Winner.builder()
                 .playerName(request.getPlayerName())
                 .playerContact(request.getPlayerContact())
@@ -60,7 +66,23 @@ public class WinnerService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        return winnerRepository.save(winner);
+        Winner winnerData = winnerRepository.save(winner);
+
+        // create a winner payout object
+        if (amountPaid.compareTo(BigDecimal.ZERO) >= 0){
+            WinnerPayout payout = new WinnerPayout();
+            payout.setWinnerId(winnerData.getId());
+            payout.setAmount(amountPaid);
+            payout.setPayoutDate(LocalDateTime.now());
+            payout.setStatus("COMPLETED");
+            payout.setRemarks("Initial Payout");
+            payout.setReasonType("WINNER_PAYOUT");
+
+            winnerPayoutRepository.save(payout);
+        }
+
+        return winnerData;
+
     }
 
     public List<Winner> getWinnerByBusinessId() {
