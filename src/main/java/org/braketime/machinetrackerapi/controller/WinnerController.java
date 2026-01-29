@@ -3,6 +3,8 @@ package org.braketime.machinetrackerapi.controller;
 
 import java.util.List;
 
+import org.apache.catalina.connector.Response;
+import org.braketime.machinetrackerapi.Dtos.UpdatePaymentPlanRequest;
 import org.braketime.machinetrackerapi.Dtos.WinnerCreateRequest;
 import org.braketime.machinetrackerapi.domain.Winner;
 import org.braketime.machinetrackerapi.services.WinnerService;
@@ -27,6 +29,14 @@ public class WinnerController {
     public ResponseEntity<Winner> createWinner(@RequestBody WinnerCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(winnerService.createWinner(request));
+    }
+
+    @PutMapping("/update-plan/{id}")
+    public ResponseEntity<Winner> updatePaymentPlan(
+            @PathVariable String id,
+            @RequestBody UpdatePaymentPlanRequest request
+            ){
+        return  ResponseEntity.ok(winnerService.updatePaymentPlan(request,id));
     }
 
     @GetMapping("/{id}")

@@ -1,5 +1,6 @@
 package org.braketime.machinetrackerapi.services;
 
+import org.braketime.machinetrackerapi.Dtos.UpdatePaymentPlanRequest;
 import org.braketime.machinetrackerapi.Dtos.WinnerCreateRequest;
 import org.braketime.machinetrackerapi.domain.Winner;
 import org.braketime.machinetrackerapi.domain.WinnerPayout;
@@ -20,7 +21,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class WinnerService {
-    private final WinnerRepository winnerRepository;
+    private WinnerRepository winnerRepository;
     private final WinnerPayoutRepository winnerPayoutRepository;
 
 
@@ -74,15 +75,24 @@ public class WinnerService {
             payout.setWinnerId(winnerData.getId());
             payout.setWinnerName(winnerData.getPlayerName());
             payout.setAmount(amountPaid);
+            payout.setBusinessId(businessId);
             payout.setPayoutDate(LocalDateTime.now());
             payout.setStatus("IN_PROGRESS");
             payout.setRemarks("Initial Payout");
             payout.setReasonType("WINNER_PAYOUT");
+            payout.setCreatedByUser(userName);
 
             winnerPayoutRepository.save(payout);
         }
 
         return winnerData;
+
+    }
+
+    public Winner updatePaymentPlan(UpdatePaymentPlanRequest request, String winnerId){
+        Winner winner = winnerRepository.findById(winnerId).orElseThrow(()-> new NotFoundException("Winner not found for provided id"));
+        winner.setPaymentPlan(request.getPaymentPlan());
+        return winnerRepository.save(winner);
 
     }
 
