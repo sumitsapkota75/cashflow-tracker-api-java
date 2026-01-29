@@ -29,6 +29,9 @@ public class WinnerPayout {
     private String winnerName;
 
     @Indexed
+    private  String periodId;
+
+    @Indexed
     private String businessId;
 
     private BigDecimal amount;

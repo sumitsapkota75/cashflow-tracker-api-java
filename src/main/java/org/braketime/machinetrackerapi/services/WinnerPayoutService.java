@@ -2,6 +2,7 @@ package org.braketime.machinetrackerapi.services;
 
 import lombok.AllArgsConstructor;
 import org.braketime.machinetrackerapi.Dtos.WinnerPayoutCreateRequest;
+import org.braketime.machinetrackerapi.domain.Period;
 import org.braketime.machinetrackerapi.domain.Winner;
 import org.braketime.machinetrackerapi.domain.WinnerPayout;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
@@ -23,6 +24,7 @@ public class WinnerPayoutService {
 
     private final WinnerPayoutRepository winnerPayoutRepository;
     private final WinnerRepository winnerRepository;
+    private final PeriodService periodService;
 
     public WinnerPayout createPayout(WinnerPayoutCreateRequest request){
 
@@ -64,9 +66,14 @@ public class WinnerPayoutService {
         winnerRepository.save(winner);
     }
 
+    // get the open period id
+    Period period = periodService.getOpenPeriod();
+
+
     WinnerPayout winnerPayout = WinnerPayout.builder()
             .winnerId(winnerId)
             .businessId(businessId)
+            .periodId(period.getId())
             .winnerName(request.getWinnerName())
             .createdByUser(userName)
             .amount(request.getAmount())

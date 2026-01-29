@@ -22,9 +22,8 @@ public interface PeriodRepositoy extends MongoRepository<Period, String> {
 
     Page<Period> findAllByBusinessId(String businessId, Pageable pageable);
 
-    Optional<Period> findByBusinessIdAndBusinessDateAndStatus(
+    Optional<Period> findFirstByBusinessIdAndStatusOrderByOpenedAtDesc(
             String businessId,
-            LocalDate businessDate,
             PeriodStatus status
     );
 

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -33,7 +34,7 @@ public class PeriodService {
                         ? request.getBusinessDate()
                         : LocalDate.now();
 
-        // TODO: make sure there exists only one open period for the business
+        // make sure there exists only one open period for the business
         boolean alreadyOpen =
                 periodRepository.existsByBusinessIdAndBusinessDateAndStatus(
                         businessId,
@@ -67,12 +68,15 @@ public class PeriodService {
             throw new IllegalStateException("Period already closed");
         }
 
+
         // ⚠️ Placeholder:
-        // Later we will aggregate money_movements here
-        // and populate totalCashInClose / totalCashOutClose
+        // populate total safe drop amount, and total payout in period
+        // get all the payouts for period.
+
+
+        // create a safe drop object
 
         periodMapper.update(request, period);
-
         period.setStatus(PeriodStatus.CLOSED);
         period.setTotalCashInClose(request.getTotalCashInClose());
         period.setTotalCashOutClose(request.getTotalCashOutClose());
@@ -104,6 +108,12 @@ public class PeriodService {
     public PeriodResponse getPeriodById(String periodId) {
         return periodRepository.findById(periodId).map(periodMapper::toResponse)
                 .orElseThrow(() -> new IllegalArgumentException("Period not found"));
+    }
+
+    // get open period
+    public Period getOpenPeriod(){
+        String businessID = SecurityUtils.businessId();
+        return periodRepository.findFirstByBusinessIdAndStatusOrderByOpenedAtDesc(businessID,PeriodStatus.OPEN).orElseThrow(()->new NotFoundException("Open period not found"));
     }
 
 }
