@@ -6,6 +6,7 @@ import org.braketime.machinetrackerapi.domain.Period;
 import org.braketime.machinetrackerapi.domain.Winner;
 import org.braketime.machinetrackerapi.domain.WinnerPayout;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
+import org.braketime.machinetrackerapi.repository.PeriodRepositoy;
 import org.braketime.machinetrackerapi.repository.WinnerPayoutRepository;
 import org.braketime.machinetrackerapi.repository.WinnerRepository;
 import org.braketime.machinetrackerapi.security.SecurityUtils;
@@ -25,6 +26,7 @@ public class WinnerPayoutService {
     private final WinnerPayoutRepository winnerPayoutRepository;
     private final WinnerRepository winnerRepository;
     private final PeriodService periodService;
+    private final PeriodRepositoy periodRepositoy;
 
     public WinnerPayout createPayout(WinnerPayoutCreateRequest request){
 
@@ -37,11 +39,11 @@ public class WinnerPayoutService {
     boolean isWinnerPayout = "WINNER_PAYOUT".equals(request.getReasonType());
     String winnerId = request.getWinnerID();
 
+    BigDecimal payoutAmount = request.getAmount() == null ? BigDecimal.ZERO : request.getAmount();
     if (isWinnerPayout && winnerId != null && !winnerId.isBlank()) {
         winner = winnerRepository.findById(winnerId)
                 .orElseThrow(() -> new NotFoundException("Winner not found"));
 
-        BigDecimal payoutAmount = request.getAmount() == null ? BigDecimal.ZERO : request.getAmount();
         BigDecimal currentPaid = winner.getAmountPaid() == null ? BigDecimal.ZERO : winner.getAmountPaid();
         BigDecimal totalWin = winner.getTotalWinAmount() == null ? BigDecimal.ZERO : winner.getTotalWinAmount();;
 
@@ -68,7 +70,9 @@ public class WinnerPayoutService {
 
     // get the open period id
     Period period = periodService.getOpenPeriod();
-
+    // add the payout amount to period
+    period.setPayout(period.getPayout().add(payoutAmount));
+    periodRepositoy.save(period);
 
     WinnerPayout winnerPayout = WinnerPayout.builder()
             .winnerId(winnerId)
