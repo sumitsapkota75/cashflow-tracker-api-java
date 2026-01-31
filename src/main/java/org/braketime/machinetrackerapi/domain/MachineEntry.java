@@ -61,4 +61,6 @@ public class MachineEntry {
 
 
     private String remarks;
+    private String status;
+    private boolean hasPreviousEntry = false;
 }

@@ -31,4 +31,6 @@ public class MachineEntryResponse {
     private LocalDateTime openedAt;
 
     private String username;
+
+    private boolean hasPreviousEntry;
 }

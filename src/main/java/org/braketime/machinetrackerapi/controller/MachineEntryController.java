@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryRequest;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryResponse;
+import org.braketime.machinetrackerapi.domain.MachineEntry;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
 import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.braketime.machinetrackerapi.services.MachineEntryService;
@@ -53,6 +54,14 @@ public class MachineEntryController {
 
         return ResponseEntity.ok(machineEntryService.getEntriesForPeriod(periodID,businessId,startDate,endDate));
 
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<MachineEntry> getRecentMachineEntry(
+            @RequestParam String periodId,
+            @RequestParam String machineId
+    ){
+        return ResponseEntity.ok(machineEntryService.getLastMachineEntryForPeriod(periodId,machineId));
     }
 
 }

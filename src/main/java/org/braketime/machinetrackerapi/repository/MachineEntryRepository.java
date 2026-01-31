@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MachineEntryRepository extends MongoRepository<MachineEntry,String> {
-    List<MachineEntry> findByPeriodIdAndMachineId(
+    MachineEntry findTopByPeriodIdAndMachineIdOrderByOpenedAtDesc(
             String periodId,
             String machineId
     );
 
-    List<MachineEntry> findByBusinessIdAndPeriodId(String businessId, String periodId);
+    List<MachineEntry> findByBusinessIdAndPeriodIdOrderByOpenedAtDesc(String businessId, String periodId);
     List<MachineEntry> findByOpenedByUserId(String userId);
     List<MachineEntry> findByBusinessIdAndOpenedAtBetween(
             String businessId,

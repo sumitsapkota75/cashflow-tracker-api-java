@@ -40,47 +40,111 @@ public class MachineEntryService {
     private final MachineEntryMapper machineEntryMapper;
     private final MachineEntryRepository machineEntryRepository;
 
-    public MachineEntryResponse createEntry(MachineEntryRequest request, String username){
+    public MachineEntryResponse createEntry(MachineEntryRequest request, String username) {
+        final String userId = SecurityUtils.userId();
+        final String businessId = SecurityUtils.businessId();
+        final LocalDateTime now = LocalDateTime.now();
 
-        String userId = SecurityUtils.userId();
-        String businessId = SecurityUtils.businessId();
-        Period openPeriod = periodRepositoy.findByBusinessIdAndStatus(businessId, PeriodStatus.OPEN)
-                .orElseThrow(()-> new NotFoundException("No open period found"));
+        // 1) Fetch open period
+        final Period openPeriod = periodRepositoy.findByBusinessIdAndStatus(businessId, PeriodStatus.OPEN)
+                .orElseThrow(() -> new NotFoundException("No open period found"));
 
-        MachineEntry machineEntry = machineEntryMapper.toEntity(request);
+        // 2) Validate machineId
+        final String machineId = request.getMachineId();
+        if (machineId == null || machineId.isBlank()) {
+            throw new IllegalArgumentException("machineId is required");
+        }
 
+        // 3) Previous entry (same machine, same period)
+        final MachineEntry prev = machineEntryRepository
+                .findTopByPeriodIdAndMachineIdOrderByOpenedAtDesc(openPeriod.getId(), machineId);
 
-        // calculate difference in machine entry
-        BigDecimal netCashIn = request.getReportCashIn().subtract(request.getReportCashOut());
-        machineEntry.setDifference(
-                netCashIn.subtract(request.getPhysicalCash())
+        // 4) Normalize inputs (null-safe)
+        final BigDecimal currIn = z(request.getReportCashIn());
+        final BigDecimal currOut = z(request.getReportCashOut()); // stored for reporting only (not used in calc)
+        final BigDecimal physical = z(request.getPhysicalCash());
+        final BigDecimal safeDrop = z(request.getSafeDroppedAmount());
+
+        // 5) Calculate difference (CASH-IN ONLY)
+        final BigDecimal prevIn = (prev == null) ? null : z(prev.getReportCashIn());
+        final BigDecimal deltaIn = (prev == null) ? null : currIn.subtract(prevIn);
+
+        // first entry in period => per your rule: difference = 0
+        final BigDecimal expectedPhysical = (prev == null) ? null : deltaIn;
+        final BigDecimal difference;
+        final boolean hasPreviousEntry = (prev != null);
+
+        if (prev == null) {
+            difference = BigDecimal.ZERO;
+        } else {
+            if (deltaIn.compareTo(BigDecimal.ZERO) < 0) {
+                log.error(
+                        "[MACHINE_ENTRY_CALC_ERROR] cashIn decreased | businessId={} periodId={} machineId={} prevIn={} currIn={} deltaIn={}",
+                        businessId, openPeriod.getId(), machineId, prevIn, currIn, deltaIn
+                );
+                throw new IllegalStateException("Machine report cash-in decreased; possible reset or wrong report entered.");
+            }
+            difference = physical.subtract(expectedPhysical);
+        }
+
+        final String status = (difference.compareTo(BigDecimal.ZERO) == 0) ? "MATCHED" : "MISMATCH";
+
+        // --- Single audit log line (easy to verify) ---
+        log.info(
+                "[MACHINE_ENTRY_AUDIT] mode=CASH_IN_ONLY businessId={} periodId={} machineId={} userId={} username={} " +
+                        "prevEntryId={} prevIn={} currIn={} deltaIn={} expectedPhysical={} physicalCash={} difference={} status={} " +
+                        "reportCashOut(ignored)={} safeDrop={}",
+                businessId, openPeriod.getId(), machineId, userId, username,
+                (prev == null ? "NONE" : prev.getId()),
+                (prevIn == null ? "N/A" : prevIn),
+                currIn,
+                (deltaIn == null ? "N/A" : deltaIn),
+                (expectedPhysical == null ? "N/A" : expectedPhysical),
+                physical,
+                difference,
+                status,
+                currOut,
+                safeDrop
         );
 
-        machineEntry.setBusinessId(businessId);
-        machineEntry.setOpenedByUserId(userId);
-        machineEntry.setPeriodId(openPeriod.getId());
-        machineEntry.setOpenedAt(LocalDateTime.now());
-        machineEntry.setUsername(username);
+        // 6) Build entity + set server-controlled fields
+        final MachineEntry entry = machineEntryMapper.toEntity(request);
+        entry.setBusinessId(businessId);
+        entry.setOpenedByUserId(userId);
+        entry.setPeriodId(openPeriod.getId());
+        entry.setOpenedAt(now);
+        entry.setUsername(username);
+        entry.setHasPreviousEntry(hasPreviousEntry);
+        entry.setDifference(difference);
+        entry.setStatus(status);
 
-        machineEntryRepository.save(machineEntry);
+        machineEntryRepository.save(entry);
 
-        // Aggregate in Period data
-        BigDecimal currentSafeDrop =
-                openPeriod.getSafeDrop() == null
-                        ? BigDecimal.ZERO
-                        : openPeriod.getSafeDrop();
-        // check if this works.
-        BigDecimal machineSafeDrop =
-                machineEntry.getSafeDroppedAmount() == null
-                        ? BigDecimal.ZERO
-                        : machineEntry.getSafeDroppedAmount();
+        log.info("[MACHINE_ENTRY_SAVED] entryId={} status={} difference={}", entry.getId(), status, difference);
 
-        openPeriod.setSafeDrop(currentSafeDrop.add(machineSafeDrop));
-        BigDecimal periodPhysicalCash = openPeriod.getPhysicalCashCollected() == null ? BigDecimal.ZERO : openPeriod.getPhysicalCashCollected();
-        openPeriod.setPhysicalCashCollected(periodPhysicalCash.add(machineEntry.getPhysicalCash()));
+        // 7) Aggregate into Period
+        final BigDecimal periodSafeDropBefore = z(openPeriod.getSafeDrop());
+        final BigDecimal periodPhysicalBefore = z(openPeriod.getPhysicalCashCollected());
+
+        final BigDecimal periodSafeDropAfter = periodSafeDropBefore.add(safeDrop);
+        final BigDecimal periodPhysicalAfter = periodPhysicalBefore.add(physical);
+
+        log.info(
+                "[PERIOD_AGGREGATE_AUDIT] periodId={} safeDrop: {} + {} = {} | physicalCashCollected: {} + {} = {}",
+                openPeriod.getId(),
+                periodSafeDropBefore, safeDrop, periodSafeDropAfter,
+                periodPhysicalBefore, physical, periodPhysicalAfter
+        );
+
+        openPeriod.setSafeDrop(periodSafeDropAfter);
+        openPeriod.setPhysicalCashCollected(periodPhysicalAfter);
         periodRepositoy.save(openPeriod);
-        return machineEntryMapper.toResponse(machineEntry);
+
+        return machineEntryMapper.toResponse(entry);
     }
+
+
+
 
 
     public List<MachineEntryResponse> getEntriesForPeriod(
@@ -95,9 +159,17 @@ public class MachineEntryService {
             );
         } else {
             log.info("business id and period id: {} {}",businessId,periodID);
-            entries =  machineEntryRepository.findByBusinessIdAndPeriodId(businessId, periodID);
+            entries =  machineEntryRepository.findByBusinessIdAndPeriodIdOrderByOpenedAtDesc(businessId, periodID);
         }
         return entries.stream().map(machineEntryMapper::toResponse).toList();
 
+    }
+
+    public MachineEntry getLastMachineEntryForPeriod(String periodID,String machineId){
+        return machineEntryRepository.findTopByPeriodIdAndMachineIdOrderByOpenedAtDesc(periodID,machineId);
+    }
+
+    private static BigDecimal z(BigDecimal v) {
+        return v == null ? BigDecimal.ZERO : v;
     }
 }

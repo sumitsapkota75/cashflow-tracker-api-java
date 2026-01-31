@@ -16,6 +16,7 @@ public interface MachineEntryMapper {
     @Mapping(target = "openedAt", ignore = true)
     @Mapping(target = "closedAt", ignore = true)
     @Mapping(target = "difference", ignore = true)
+    @Mapping(target = "hasPreviousEntry", ignore = true)
     MachineEntry toEntity(MachineEntryRequest request);
 
     @Mapping(target = "id", ignore = true)
@@ -25,6 +26,7 @@ public interface MachineEntryMapper {
     @Mapping(target = "openedAt", ignore = true)
     @Mapping(target = "closedAt", ignore = true)
     @Mapping(target = "difference", ignore = true)
+
     void updateEntity(
             MachineEntryRequest request,
             @MappingTarget MachineEntry entity
