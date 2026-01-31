@@ -61,7 +61,7 @@ public class WinnerService {
                 .playerName(request.getPlayerName())
                 .playerContact(request.getPlayerContact())
                 .winningDate(request.getWinningDate())
-            .totalWinAmount(request.getTotalWinAmount())
+                .totalWinAmount(request.getTotalWinAmount())
                 .amountPaid(request.getAmountPaid())
                 .paymentPlan(request.getPaymentPlan())
                 .remainingAmount(remainingAmount)
@@ -90,6 +90,10 @@ public class WinnerService {
             payout.setCreatedByUser(userName);
 
             winnerPayoutRepository.save(payout);
+
+            // if winner is paid out attach it to period payout as well.
+            activePeriod.setPayout(amountPaid);
+            periodRepositoy.save(activePeriod);
         }
 
         return winnerData;
