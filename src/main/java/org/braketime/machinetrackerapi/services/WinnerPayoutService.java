@@ -5,6 +5,7 @@ import org.braketime.machinetrackerapi.Dtos.WinnerPayoutCreateRequest;
 import org.braketime.machinetrackerapi.domain.Period;
 import org.braketime.machinetrackerapi.domain.Winner;
 import org.braketime.machinetrackerapi.domain.WinnerPayout;
+import org.braketime.machinetrackerapi.exception.BadRequestException;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
 import org.braketime.machinetrackerapi.repository.PeriodRepositoy;
 import org.braketime.machinetrackerapi.repository.WinnerPayoutRepository;
@@ -40,6 +41,9 @@ public class WinnerPayoutService {
     String winnerId = request.getWinnerID();
 
     BigDecimal payoutAmount = request.getAmount() == null ? BigDecimal.ZERO : request.getAmount();
+        if (payoutAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Payout amount must be greater than 0");
+        }
     if (isWinnerPayout && winnerId != null && !winnerId.isBlank()) {
         winner = winnerRepository.findById(winnerId)
                 .orElseThrow(() -> new NotFoundException("Winner not found"));
@@ -80,7 +84,7 @@ public class WinnerPayoutService {
             .periodId(period.getId())
             .winnerName(request.getWinnerName())
             .createdByUser(userName)
-            .amount(request.getAmount())
+            .amount(payoutAmount)
             .payoutDate(LocalDateTime.now())
             .reasonType(request.getReasonType())
             .status(status)

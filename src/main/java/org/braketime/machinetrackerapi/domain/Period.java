@@ -41,9 +41,9 @@ public class Period {
     private LocalDateTime openedAt;
     private LocalDateTime closedAt;
 
-    private BigDecimal safeDrop;
-    private BigDecimal payout;
-    private BigDecimal physicalCashCollected;
+    private BigDecimal safeDrop = BigDecimal.ZERO;
+    private BigDecimal payout = BigDecimal.ZERO;
+    private BigDecimal physicalCashCollected = BigDecimal.ZERO;
 
     private String openedByUserId;
     private String closedByUserId;

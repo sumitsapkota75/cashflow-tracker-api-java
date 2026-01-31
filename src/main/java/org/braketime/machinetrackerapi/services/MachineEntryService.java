@@ -49,8 +49,11 @@ public class MachineEntryService {
 
         MachineEntry machineEntry = machineEntryMapper.toEntity(request);
 
+
+        // calculate difference in machine entry
+        BigDecimal netCashIn = request.getReportCashIn().subtract(request.getReportCashOut());
         machineEntry.setDifference(
-                request.getNetFromReport().subtract(request.getPhysicalCash())
+                netCashIn.subtract(request.getPhysicalCash())
         );
 
         machineEntry.setBusinessId(businessId);
@@ -61,24 +64,18 @@ public class MachineEntryService {
 
         machineEntryRepository.save(machineEntry);
 
-        log.info(
-                "MachineEntry created. entryId={}, periodId={}, machineId={}",
-                machineEntry.getId(),
-                machineEntry.getPeriodId(),
-                machineEntry.getMachineId()
-        );
         // Aggregate in Period data
         BigDecimal currentSafeDrop =
                 openPeriod.getSafeDrop() == null
                         ? BigDecimal.ZERO
                         : openPeriod.getSafeDrop();
-
+        // check if this works.
         BigDecimal machineSafeDrop =
                 machineEntry.getSafeDroppedAmount() == null
                         ? BigDecimal.ZERO
                         : machineEntry.getSafeDroppedAmount();
-        openPeriod.setSafeDrop(currentSafeDrop.add(machineSafeDrop));
 
+        openPeriod.setSafeDrop(currentSafeDrop.add(machineSafeDrop));
         BigDecimal periodPhysicalCash = openPeriod.getPhysicalCashCollected() == null ? BigDecimal.ZERO : openPeriod.getPhysicalCashCollected();
         openPeriod.setPhysicalCashCollected(periodPhysicalCash.add(machineEntry.getPhysicalCash()));
         periodRepositoy.save(openPeriod);

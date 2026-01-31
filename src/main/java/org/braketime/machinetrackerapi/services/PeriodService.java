@@ -74,14 +74,14 @@ public class PeriodService {
         // get all the payouts for period.
 
 
-        // create a safe drop object
-
         periodMapper.update(request, period);
         period.setStatus(PeriodStatus.CLOSED);
         period.setTotalCashInClose(request.getTotalCashInClose());
         period.setTotalCashOutClose(request.getTotalCashOutClose());
         period.setClosedAt(LocalDateTime.now());
         period.setClosedByUserId(userId);
+        period.setNetClose(request.getTotalCashInClose().subtract(request.getTotalCashOutClose()));
+
         periodRepository.save(period);
 
         return periodMapper.toResponse(period);

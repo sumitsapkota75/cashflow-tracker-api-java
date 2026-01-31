@@ -34,7 +34,7 @@ public class WinnerPayout {
     @Indexed
     private String businessId;
 
-    private BigDecimal amount;
+    private BigDecimal amount = BigDecimal.ZERO;
 
     private LocalDateTime payoutDate;
 
