@@ -2,9 +2,11 @@ package org.braketime.machinetrackerapi.services;
 
 import org.braketime.machinetrackerapi.Dtos.UpdatePaymentPlanRequest;
 import org.braketime.machinetrackerapi.Dtos.WinnerCreateRequest;
+import org.braketime.machinetrackerapi.domain.Period;
 import org.braketime.machinetrackerapi.domain.Winner;
 import org.braketime.machinetrackerapi.domain.WinnerPayout;
 import org.braketime.machinetrackerapi.exception.NotFoundException;
+import org.braketime.machinetrackerapi.repository.PeriodRepositoy;
 import org.braketime.machinetrackerapi.repository.WinnerRepository;
 import org.braketime.machinetrackerapi.repository.WinnerPayoutRepository;
 import org.braketime.machinetrackerapi.security.SecurityUtils;
@@ -21,6 +23,8 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class WinnerService {
+    private final PeriodRepositoy periodRepositoy;
+    private final PeriodService periodService;
     private WinnerRepository winnerRepository;
     private final WinnerPayoutRepository winnerPayoutRepository;
 
@@ -57,7 +61,7 @@ public class WinnerService {
                 .playerName(request.getPlayerName())
                 .playerContact(request.getPlayerContact())
                 .winningDate(request.getWinningDate())
-                .totalWinAmount(request.getTotalWinAmount())
+            .totalWinAmount(request.getTotalWinAmount())
                 .amountPaid(request.getAmountPaid())
                 .paymentPlan(request.getPaymentPlan())
                 .remainingAmount(remainingAmount)
@@ -69,6 +73,8 @@ public class WinnerService {
 
         Winner winnerData = winnerRepository.save(winner);
 
+        // get active period:
+        Period activePeriod = periodService.getOpenPeriod();
         // create a winner payout object
         if (amountPaid.compareTo(BigDecimal.ZERO) >= 0){
             WinnerPayout payout = new WinnerPayout();
@@ -76,6 +82,7 @@ public class WinnerService {
             payout.setWinnerName(winnerData.getPlayerName());
             payout.setAmount(amountPaid);
             payout.setBusinessId(businessId);
+            payout.setPeriodId(activePeriod.getId());
             payout.setPayoutDate(LocalDateTime.now());
             payout.setStatus("IN_PROGRESS");
             payout.setRemarks("Initial Payout");
