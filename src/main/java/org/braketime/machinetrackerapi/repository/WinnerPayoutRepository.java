@@ -10,4 +10,5 @@ import java.util.List;
 public interface WinnerPayoutRepository extends MongoRepository<WinnerPayout,String> {
     List<WinnerPayout> findAllByWinnerIdOrderByPayoutDateDesc(String id);
     Page<WinnerPayout> findAllByBusinessIdOrderByPayoutDateDesc(String id, Pageable pageable);
+    List<WinnerPayout> findAllByBusinessIdAndPeriodIdOrderByPayoutDateDesc(String businessId, String periodId);
 }

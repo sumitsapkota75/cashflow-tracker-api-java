@@ -102,4 +102,9 @@ public class WinnerPayoutService {
         String businessId = SecurityUtils.businessId();
         return winnerPayoutRepository.findAllByBusinessIdOrderByPayoutDateDesc(businessId,pageable);
     }
+
+    public List<WinnerPayout> getPayoutByPeriodId(String periodId){
+        String businessId = SecurityUtils.businessId();
+        return winnerPayoutRepository.findAllByBusinessIdAndPeriodIdOrderByPayoutDateDesc(businessId,periodId);
+    }
 }

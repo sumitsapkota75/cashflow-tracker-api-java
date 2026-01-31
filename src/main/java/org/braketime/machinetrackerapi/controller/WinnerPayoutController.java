@@ -34,4 +34,10 @@ public class WinnerPayoutController {
     public  ResponseEntity<Page<WinnerPayout>> getPayoutForBusiness(Pageable pageable){
         return ResponseEntity.ok(winnerPayoutService.getPayoutsByBusinessId(pageable));
     }
+    @GetMapping("/period/{periodId}")
+    public ResponseEntity<List<WinnerPayout>> getPayoutForBusinessByPeriodId(
+            @PathVariable String periodId
+    ){
+        return ResponseEntity.ok(winnerPayoutService.getPayoutByPeriodId(periodId));
+    }
 }
