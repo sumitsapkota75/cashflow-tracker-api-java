@@ -59,4 +59,9 @@ public class PeriodController {
     ) {
         return ResponseEntity.ok(periodService.getPeriodById(id));
     }
+    // get recent closed period
+    @GetMapping("/recent-closed")
+    public ResponseEntity<PeriodResponse> getRecentClosedPeriod(){
+        return ResponseEntity.ok(periodService.getRecentClosedPeriod());
+    }
 }

@@ -116,4 +116,13 @@ public class PeriodService {
         return periodRepository.findFirstByBusinessIdAndStatusOrderByOpenedAtDesc(businessID,PeriodStatus.OPEN).orElseThrow(()->new NotFoundException("Open period not found"));
     }
 
+    // get most recent closed period
+    public PeriodResponse getRecentClosedPeriod(){
+        String businessID = SecurityUtils.businessId();
+        return periodRepository.findFirstByBusinessIdAndStatusOrderByOpenedAtDesc(businessID,PeriodStatus.CLOSED)
+                .map(periodMapper::toResponse)
+                .orElseThrow(()->new NotFoundException("Most recent closed period not found"));
+
+    }
+
 }
