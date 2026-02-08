@@ -18,7 +18,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // EXACT origin of Next.js
-        config.setAllowedOrigins(List.of("http://localhost:3000","http://10.2.1.227:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:3000","http://10.2.1.227:3000", "https://cashflow-tracker-frontend.vercel.app"));
 
         config.setAllowedMethods(List.of(
                 "GET",

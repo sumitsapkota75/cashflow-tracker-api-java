@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 2086 >>
+stream
+BT /F2 16 Tf 54 738 Td (Machine Tracker API - One-Page Summary) Tj ET
+BT /F2 12 Tf 54 710 Td (What it is) Tj ET
+BT /F1 11 Tf 54 694 Td (Backend API for tracking cash movement in gaming machines across multiple business) Tj ET
+BT /F1 11 Tf 54 680 Td (locations. It records daily periods, machine opens, and payouts with strong auditability.) Tj ET
+BT /F2 12 Tf 54 658 Td (Who it is for) Tj ET
+BT /F1 11 Tf 54 642 Td (Business owners, managers, and employees who operate gaming machines and need cash accountability.) Tj ET
+BT /F2 12 Tf 54 620 Td (What it does) Tj ET
+BT /F1 11 Tf 54 604 Td (- Manage businesses \(create, update, enable or disable\).) Tj ET
+BT /F1 11 Tf 54 590 Td (- Manage users and roles with JWT login.) Tj ET
+BT /F1 11 Tf 54 576 Td (- Open and close daily business periods.) Tj ET
+BT /F1 11 Tf 54 562 Td (- Record machine entry events with cash in, cash out, drops, and payouts.) Tj ET
+BT /F1 11 Tf 54 548 Td (- Track winners and payout plans, and record payout transactions.) Tj ET
+BT /F1 11 Tf 54 534 Td (- Query periods, machine entries, winners, and payouts for reporting workflows.) Tj ET
+BT /F1 11 Tf 54 520 Td (- Health check endpoint for service status.) Tj ET
+BT /F2 12 Tf 54 498 Td (How it works) Tj ET
+BT /F1 11 Tf 54 482 Td (- Client -> REST controllers -> services -> repositories -> MongoDB.) Tj ET
+BT /F1 11 Tf 54 468 Td (- Spring Security with JWT filter provides authenticated user context.) Tj ET
+BT /F1 11 Tf 54 454 Td (- DTOs and MapStruct mappers isolate API contracts from domain objects.) Tj ET
+BT /F1 11 Tf 54 440 Td (- MongoDB GridFS bucket configured for file storage tied to periods \(images\).) Tj ET
+BT /F2 12 Tf 54 418 Td (How to run) Tj ET
+BT /F1 11 Tf 54 402 Td (1. Install Java 21 \(project uses Spring Boot and Maven wrapper\).) Tj ET
+BT /F1 11 Tf 54 388 Td (2. Configure MongoDB URI and JWT secret in src/main/resources/application.properties.) Tj ET
+BT /F1 11 Tf 54 374 Td (3. Run ./mvnw spring-boot:run \(server.port defaults to 8080\).) Tj ET
+BT /F1 11 Tf 54 360 Td (4. Local MongoDB provisioning steps: Not found in repo.) Tj ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2534
+%%EOF
