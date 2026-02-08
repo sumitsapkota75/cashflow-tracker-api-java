@@ -10,8 +10,12 @@ import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.braketime.machinetrackerapi.services.PeriodService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -37,12 +41,13 @@ public class PeriodController {
         String userId = SecurityUtils.userId();
         return ResponseEntity.ok(periodService.openPeriod(request,userId));
     }
-    @PostMapping("/close")
+    @PostMapping(value = "/close", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PeriodResponse> closePeriod(
-            @RequestBody ClosePeriodRequest request
+            @RequestPart("payload") ClosePeriodRequest request,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
     ){
         String userId = SecurityUtils.userId();
-        return ResponseEntity.ok(periodService.closePeriod(request,userId));
+        return ResponseEntity.ok(periodService.closePeriod(request, files, userId));
     }
 
     @GetMapping("/active/{businessId}")
@@ -64,4 +69,5 @@ public class PeriodController {
     public ResponseEntity<PeriodResponse> getRecentClosedPeriod(){
         return ResponseEntity.ok(periodService.getRecentClosedPeriod());
     }
+
 }

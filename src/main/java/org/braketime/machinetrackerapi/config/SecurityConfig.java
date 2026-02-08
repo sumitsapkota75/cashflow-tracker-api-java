@@ -45,6 +45,7 @@ public class SecurityConfig {
                         // Allow auth endpoints fully
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/health-check").permitAll()
+                        .requestMatchers("/files/**").permitAll()
 
                         // Everything else secured
                         .anyRequest().authenticated()

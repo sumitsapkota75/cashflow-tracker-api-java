@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -57,6 +58,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(
             BadRequestException ex,
+            HttpServletRequest request
+    ) {
+
+        log.warn("BAD REQUEST: {}", ex.getMessage());
+
+        return buildError(
+                HttpStatus.BAD_REQUEST,
+                "Bad Request",
+                ex.getMessage(),
+                request
+        );
+    }
+
+    // 🔹 2b. BAD REQUEST (IllegalArgumentException)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(
+            IllegalArgumentException ex,
             HttpServletRequest request
     ) {
 
@@ -139,6 +157,21 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal Server Error",
                 "Something went wrong. Please contact support.",
+                request
+        );
+    }
+
+    // 🔹 7. MULTIPART TOO LARGE
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSize(
+            MaxUploadSizeExceededException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("UPLOAD TOO LARGE: {}", ex.getMessage());
+        return buildError(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                "Payload Too Large",
+                "Uploaded file(s) exceed the maximum allowed size",
                 request
         );
     }

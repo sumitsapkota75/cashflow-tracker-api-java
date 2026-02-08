@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document("machine_entries")
 @Data
@@ -63,4 +64,6 @@ public class MachineEntry {
     private String remarks;
     private String status;
     private boolean hasPreviousEntry = false;
+
+    private List<String> images;
 }

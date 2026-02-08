@@ -6,6 +6,7 @@ import org.braketime.machinetrackerapi.enums.OpenReason;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -33,4 +34,6 @@ public class MachineEntryResponse {
     private String username;
 
     private boolean hasPreviousEntry;
+
+    private List<String> images;
 }

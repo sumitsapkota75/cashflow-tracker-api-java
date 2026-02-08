@@ -3,6 +3,7 @@ package org.braketime.machinetrackerapi.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.ClosePeriodRequest;
+import org.braketime.machinetrackerapi.Dtos.ImageUploadResult;
 import org.braketime.machinetrackerapi.Dtos.OpenPeriodRequest;
 import org.braketime.machinetrackerapi.Dtos.PeriodResponse;
 import org.braketime.machinetrackerapi.domain.Period;
@@ -15,10 +16,13 @@ import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,6 +30,7 @@ import java.util.Optional;
 public class PeriodService {
     private final PeriodRepositoy periodRepository;
     private final PeriodMapper periodMapper;
+    private final ImageStorageService imageStorageService;
 
     public PeriodResponse openPeriod(OpenPeriodRequest request, String userId){
         String businessId = SecurityUtils.businessId();
@@ -60,7 +65,7 @@ public class PeriodService {
     }
 
 
-    public PeriodResponse closePeriod(ClosePeriodRequest request, String userId){
+    public PeriodResponse closePeriod(ClosePeriodRequest request, List<MultipartFile> files, String userId){
         Period period = periodRepository.findById(request.getPeriodId())
                 .orElseThrow(()-> new NotFoundException("Selected period not found"));
 
@@ -82,9 +87,31 @@ public class PeriodService {
         period.setClosedByUserId(userId);
         period.setNetClose(request.getTotalCashInClose().subtract(request.getTotalCashOutClose()));
 
-        periodRepository.save(period);
+        List<ImageUploadResult> uploads = List.of();
+        if (files != null && !files.isEmpty()) {
+            uploads = imageStorageService.uploadImages(files);
+            List<String> urls = uploads.stream()
+                    .map(ImageUploadResult::getUrl)
+                    .collect(Collectors.toList());
+            if (period.getImages() == null) {
+                period.setImages(new ArrayList<>());
+            }
+            period.getImages().addAll(urls);
+        }
 
-        return periodMapper.toResponse(period);
+        try {
+            periodRepository.save(period);
+            return periodMapper.toResponse(period);
+        } catch (Exception ex) {
+            List<String> fileIds = uploads.stream()
+                    .map(ImageUploadResult::getFileId)
+                    .collect(Collectors.toList());
+            imageStorageService.deleteImagesById(fileIds);
+            if (ex instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+            }
+            throw new RuntimeException("Failed to close period with images", ex);
+        }
 
     }
 

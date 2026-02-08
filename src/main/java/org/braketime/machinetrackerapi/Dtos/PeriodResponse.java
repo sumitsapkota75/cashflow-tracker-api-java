@@ -6,6 +6,7 @@ import org.braketime.machinetrackerapi.enums.PeriodStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class PeriodResponse {
@@ -30,4 +31,6 @@ public class PeriodResponse {
 
     private BigDecimal netOpen;
     private BigDecimal netClose;
+
+    private List<String> images;
 }

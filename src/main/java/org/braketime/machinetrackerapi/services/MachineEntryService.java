@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.BusinessRequest;
+import org.braketime.machinetrackerapi.Dtos.ImageUploadResult;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryRequest;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryResponse;
 import org.braketime.machinetrackerapi.domain.MachineEntry;
@@ -21,14 +22,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -39,8 +43,9 @@ public class MachineEntryService {
     private final PeriodRepositoy periodRepositoy;
     private final MachineEntryMapper machineEntryMapper;
     private final MachineEntryRepository machineEntryRepository;
+    private final ImageStorageService imageStorageService;
 
-    public MachineEntryResponse createEntry(MachineEntryRequest request, String username) {
+    public MachineEntryResponse createEntry(MachineEntryRequest request, List<MultipartFile> files, String username) {
         final String userId = SecurityUtils.userId();
         final String businessId = SecurityUtils.businessId();
         final LocalDateTime now = LocalDateTime.now();
@@ -118,7 +123,30 @@ public class MachineEntryService {
         entry.setDifference(difference);
         entry.setStatus(status);
 
-        machineEntryRepository.save(entry);
+        List<ImageUploadResult> uploads = List.of();
+        if (files != null && !files.isEmpty()) {
+            uploads = imageStorageService.uploadImages(files);
+            List<String> urls = uploads.stream()
+                    .map(ImageUploadResult::getUrl)
+                    .collect(Collectors.toList());
+            if (entry.getImages() == null) {
+                entry.setImages(new ArrayList<>());
+            }
+            entry.getImages().addAll(urls);
+        }
+
+        try {
+            machineEntryRepository.save(entry);
+        } catch (Exception ex) {
+            List<String> fileIds = uploads.stream()
+                    .map(ImageUploadResult::getFileId)
+                    .collect(Collectors.toList());
+            imageStorageService.deleteImagesById(fileIds);
+            if (ex instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+            }
+            throw new RuntimeException("Failed to save machine entry with images", ex);
+        }
 
         log.info("[MACHINE_ENTRY_SAVED] entryId={} status={} difference={}", entry.getId(), status, difference);
 

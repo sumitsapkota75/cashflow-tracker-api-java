@@ -1,5 +1,6 @@
 package org.braketime.machinetrackerapi.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.braketime.machinetrackerapi.Dtos.MachineEntryRequest;
@@ -9,8 +10,10 @@ import org.braketime.machinetrackerapi.exception.NotFoundException;
 import org.braketime.machinetrackerapi.security.SecurityUtils;
 import org.braketime.machinetrackerapi.services.MachineEntryService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,13 +25,21 @@ import java.util.List;
 public class MachineEntryController {
 
     final MachineEntryService machineEntryService;
+    final ObjectMapper objectMapper;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MachineEntryResponse> createMachineEntry(
-            @RequestBody MachineEntryRequest request
+            @RequestPart("payload") String payload,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
             ){
         String username = SecurityUtils.username();
-        return ResponseEntity.ok(machineEntryService.createEntry(request, username));
+        MachineEntryRequest request;
+        try {
+            request = objectMapper.readValue(payload, MachineEntryRequest.class);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Invalid machine entry payload JSON", ex);
+        }
+        return ResponseEntity.ok(machineEntryService.createEntry(request, files, username));
     }
     @GetMapping("/{periodID}")
     public ResponseEntity<List<MachineEntryResponse>> getEntriesForPeriod(
