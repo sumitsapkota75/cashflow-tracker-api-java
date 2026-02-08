@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.braketime.machinetrackerapi.Dtos.ImageDto;
 import org.braketime.machinetrackerapi.enums.PeriodStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document("periods")
 @Data
@@ -47,5 +49,7 @@ public class Period {
 
     private String openedByUserId;
     private String closedByUserId;
+
+    private List<ImageDto> images;
 }
 
